@@ -9,7 +9,7 @@
             "type": "go",
             "request": "launch",
             "mode": "auto",
-            "program": "${workspaceFolder}/MT/go/",
+            "program": "${workspaceFolder}/MT/go/cmd/ems",
         }
     ]
 }

@@ -22,11 +22,11 @@ type user struct {
 	Password   string `json:"password"`
 }
 
-var users = []user{
-	{EmployeeId: 1, Name: "Alex Zhang", Position: "Developer", EmailId: "john@example.com", MobileNo: "1234567890", Img: "https://i.pravatar.cc/150?img=1"},
-	{EmployeeId: 2, Name: "Mike Lee", Position: "Designer", EmailId: "jane@example.com", MobileNo: "0987654321", Img: "https://i.pravatar.cc/150?img=2"},
-	{EmployeeId: 3, Name: "John Wang", Position: "Manager", EmailId: "mike@example.com", MobileNo: "1122334455", Img: "https://i.pravatar.cc/150?img=3"},
-}
+// var users = []user{
+// 	{EmployeeId: 1, Name: "Alex Zhang", Position: "Developer", EmailId: "john@example.com", MobileNo: "1234567890", Img: "https://i.pravatar.cc/150?img=1"},
+// 	{EmployeeId: 2, Name: "Mike Lee", Position: "Designer", EmailId: "jane@example.com", MobileNo: "0987654321", Img: "https://i.pravatar.cc/150?img=2"},
+// 	{EmployeeId: 3, Name: "John Wang", Position: "Manager", EmailId: "mike@example.com", MobileNo: "1122334455", Img: "https://i.pravatar.cc/150?img=3"},
+// }
 
 type authRequest struct {
 	EmailId  string `json:"emailId"`
@@ -120,27 +120,26 @@ func authenticate(c *gin.Context) {
 func getUsers(c *gin.Context) {
 
 	fmt.Println("---------Getting users list")
-	// tokenString := c.GetHeader("Authorization")
-	// fmt.Println("====authCookie value:", tokenString)
 
-	// if tokenString == "" {
-	// 	c.JSON(http.StatusUnauthorized, gin.H{"error": "Missing authorization header"})
-	// 	return
-	// }
+	dbUsers, err := userService.GetAllUsers()
+	if err != nil {
+		fmt.Println("Error getting all users:", err)
+		c.IndentedJSON(http.StatusInternalServerError, gin.H{"error": "Failed to get users"})
+		return
+	}
 
-	// tokenString = tokenString[len("Bearer "):]
-	// fmt.Println("====Extracted Token value:", tokenString)
+	var users []user
 
-	// err := verifyToken(tokenString)
-	// if err != nil {
-	// 	fmt.Println("====Token verification failed:", err)
-	// 	c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token"})
-
-	// 	return
-	// }
-
-	// cookie, _ := c.Cookie("access_token")
-	// fmt.Println("===== Retrieved cookie with token:", cookie)
+	for _, dbUser := range dbUsers {
+		var u user
+		u.EmployeeId = int(dbUser.ID)
+		u.Name = dbUser.Name
+		u.Position = "Developer"
+		u.EmailId = dbUser.Email
+		u.MobileNo = "1234567890"
+		u.Img = dbUser.Img.String
+		users = append(users, u)
+	}
 
 	c.IndentedJSON(http.StatusOK, users)
 }
@@ -173,7 +172,7 @@ func addUser(c *gin.Context) {
 		return
 	}
 
-	users = append(users, newUser)
+	// users = append(users, newUser)
 	c.IndentedJSON(http.StatusCreated, newUser)
 }
 
