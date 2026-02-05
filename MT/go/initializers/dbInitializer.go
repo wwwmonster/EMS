@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
+	"os"
 	"time"
 
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -33,11 +34,12 @@ func InitDB() *sql.DB {
 	return db
 }
 
-func CreateConnectionPool(ctx context.Context, connString string) (*pgxpool.Pool, error) {
+func CreateConnectionPool(ctx context.Context, connString string) *pgxpool.Pool {
 	// Parse the connection string into a Config
 	config, err := pgxpool.ParseConfig(connString)
 	if err != nil {
-		return nil, fmt.Errorf("unable to parse connection string: %w", err)
+		log.Fatal("unable to parse connection string: %w", err)
+		os.Exit(1)
 	}
 
 	// Optional: Configure pool settings
@@ -48,15 +50,17 @@ func CreateConnectionPool(ctx context.Context, connString string) (*pgxpool.Pool
 	// Establish the connection pool
 	pool, err := pgxpool.NewWithConfig(ctx, config)
 	if err != nil {
-		return nil, fmt.Errorf("unable to create connection pool: %w", err)
+		log.Fatal("unable to create connection pool: %w", err)
+		os.Exit(1)
 	}
 
 	// Verify connectivity with a health check
 	err = pool.Ping(ctx)
 	if err != nil {
 		pool.Close()
-		return nil, fmt.Errorf("pool health check failed: %w", err)
+		log.Fatal("pool health check failed: %w", err)
+		os.Exit(1)
 	}
 
-	return pool, nil
+	return pool
 }

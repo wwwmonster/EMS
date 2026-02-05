@@ -5,7 +5,6 @@ import (
 	"ems/mt/golang/initializers"
 	"ems/mt/golang/sqlc/emsdb"
 	"log"
-	"os"
 
 	"github.com/jackc/pgx/v5"
 )
@@ -52,19 +51,16 @@ func GetUserByEmail(email string) (emsdb.User, error) {
 func GetAllUsers() ([]emsdb.User, error) {
 	ctx := context.Background()
 
-	pgxConnPoll, err := initializers.CreateConnectionPool(context.Background(), "postgres://admin:123456@localhost:5432/Angular18")
-	if err != nil {
-		log.Fatal(err)
-		os.Exit(1)
-	}
+	pgxConnPoll := initializers.CreateConnectionPool(context.Background(), "postgres://admin:123456@localhost:5432/Angular18")
+	// conn, err := pgxConnPoll.Acquire(ctx)
+
 	tx, _ := pgxConnPoll.Begin(ctx)
 	defer tx.Rollback(ctx)
 
 	queries := emsdb.New(pgxConnPoll)
 	queries.WithTx(tx).GetAllUsers(ctx)
 
-	defer pgxConnPoll.Close()
-	tx.Commit(ctx)
+	// defer pgxConnPoll.Close()
 
 	// list all authors
 	users, err := queries.GetAllUsers(ctx)
@@ -72,7 +68,7 @@ func GetAllUsers() ([]emsdb.User, error) {
 		return []emsdb.User{}, err
 	}
 	log.Println("========users:", users)
-
+	tx.Commit(ctx)
 	return users, nil
 }
 

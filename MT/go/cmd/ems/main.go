@@ -1,7 +1,6 @@
 package main
 
 import (
-	"context"
 	"database/sql"
 	"ems/mt/golang/emstest"
 	"ems/mt/golang/initializers"
@@ -10,19 +9,10 @@ import (
 	"log"
 
 	"time"
-
-	"github.com/jackc/pgx/v5/pgxpool"
 )
-
-var PgxConnPoll *pgxpool.Pool
 
 func init() {
 	initializers.LoadEvnVariables()
-	var err error
-	PgxConnPoll, err = initializers.CreateConnectionPool(context.Background(), "postgres://admin:123456@localhost:5432/Angular18")
-	if err != nil {
-		log.Fatal(err)
-	}
 }
 
 func main() {
