@@ -1,0 +1,1 @@
+CompileDaemon --build="go build -o ems cmd/ems/main.go" --command=./ems

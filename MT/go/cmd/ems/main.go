@@ -1,30 +1,55 @@
 package main
 
 import (
+	"context"
 	"database/sql"
+	"ems/mt/golang/emstest"
+	"ems/mt/golang/initializers"
 	"ems/mt/golang/router"
 	"fmt"
 	"log"
+
 	"time"
+
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
+var PgxConnPoll *pgxpool.Pool
+
+func init() {
+	initializers.LoadEvnVariables()
+	var err error
+	PgxConnPoll, err = initializers.CreateConnectionPool(context.Background(), "postgres://admin:123456@localhost:5432/Angular18")
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
 func main() {
+	// port := os.Getenv("PORT")
 	startEms()
+	// mainemstest()
+}
+
+func mainemstest() {
+	emstest.Test()
+	fmt.Println("--------")
 }
 
 func startEms() {
 	fmt.Println("Start EMS")
 	emsRouter := router.SetupEMGRouter()
 	router.CreateJwtToken("alex")
-	emsRouter.Run(":9090")
+	emsRouter.Run()
+
 }
 
-var db *sql.DB // Global variable to hold the connection pool
+// var emsDb *sql.DB = initializers.InitDB() // Global variable to hold the connection pool
 
 func initDB() {
 	connStr := "user=pquser dbname=pqgotest sslmode=disable"
 	var err error
-	db, err = sql.Open("postgres", connStr)
+	db, err := sql.Open("postgres", connStr)
 	if err != nil {
 		log.Fatal(err)
 	}

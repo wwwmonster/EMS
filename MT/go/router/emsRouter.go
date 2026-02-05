@@ -119,7 +119,7 @@ func authenticate(c *gin.Context) {
 
 func getUsers(c *gin.Context) {
 
-	fmt.Println("---------Getting users list")
+	fmt.Println("----222-----Getting users list")
 
 	dbUsers, err := userService.GetAllUsers()
 	if err != nil {
