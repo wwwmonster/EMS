@@ -51,16 +51,13 @@ func GetUserByEmail(email string) (emsdb.User, error) {
 func GetAllUsers() ([]emsdb.User, error) {
 	ctx := context.Background()
 
-	pgxConnPoll := initializers.CreateConnectionPool(context.Background(), "postgres://admin:123456@localhost:5432/Angular18")
-	// conn, err := pgxConnPoll.Acquire(ctx)
+	pgxConnPool := initializers.GetEmsPgxConnPool()
 
-	tx, _ := pgxConnPoll.Begin(ctx)
+	tx, _ := pgxConnPool.Begin(ctx)
 	defer tx.Rollback(ctx)
 
-	queries := emsdb.New(pgxConnPoll)
+	queries := emsdb.New(pgxConnPool)
 	queries.WithTx(tx).GetAllUsers(ctx)
-
-	// defer pgxConnPoll.Close()
 
 	// list all authors
 	users, err := queries.GetAllUsers(ctx)
@@ -69,6 +66,7 @@ func GetAllUsers() ([]emsdb.User, error) {
 	}
 	log.Println("========users:", users)
 	tx.Commit(ctx)
+
 	return users, nil
 }
 

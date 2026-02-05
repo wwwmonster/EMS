@@ -10,6 +10,7 @@
             "request": "launch",
             "mode": "auto",
             "program": "${workspaceFolder}/MT/go/cmd/ems",
+            // "envFile": "${workspaceFolder}/MT/go/.env",
         }
     ]
 }

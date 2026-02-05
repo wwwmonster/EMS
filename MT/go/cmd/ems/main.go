@@ -13,6 +13,7 @@ import (
 
 func init() {
 	initializers.LoadEvnVariables()
+	initializers.CreateConnectionPool()
 }
 
 func main() {
